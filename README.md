@@ -18,4 +18,5 @@ Once completed, you can submit as your answer the product of the areas of the co
   - [ ] Enforce the blue number, where it could be the sum or the first number
 - [ ] Each 2x2 subsquare must have at least one empty cell
 - [ ] Numbered cells must form a connected region
+- [ ] Identify empty connected regions, count number of cells in each region
 - [ ] Multiply the result
