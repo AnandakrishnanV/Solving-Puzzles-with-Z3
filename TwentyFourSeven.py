@@ -89,9 +89,42 @@ def blue_constraints(grid,c):
     #left vertical
     for i in range(12):
         row_sum = z3.Sum(grid[i])
-        c.add(Or)
+        
+        if(row_constr_left[i]):
+            first_val = z3.If(grid[i][0] == 0, 
+                If(grid[i][1] == 0, 
+                    If(grid[i][2] == 0, grid[i][3], grid[i][2]), grid[i][1]), grid[i][0])
+            c.add(Or(first_val == row_constr_left[i], row_sum == row_constr_left[i]))
 
+        if(row_constr_right[i]):
+            first_val = z3.If(grid[i][11] == 0, 
+                If(grid[i][10] == 0, 
+                    If(grid[i][9] == 0, grid[i][8], grid[i][9]), grid[i][10]), grid[i][11])
+            c.add(Or(first_val == row_constr_right[i], row_sum == row_constr_right[i]))
 
+    #columns
+    for j in range(12):
+        col_sum = z3.Sum([grid[i][j] for i in range(12)])
+        
+        if(column_constr_top[j]):
+            first_val = z3.If(grid[0][j] == 0, 
+                If(grid[1][j] == 0, 
+                    If(grid[2][j] == 0, grid[3][j], grid[2][j]), grid[1][j]), grid[0][j])
+            c.add(Or(first_val == column_constr_top[j], col_sum == column_constr_top[j]))
+
+        if(column_constr_bottom[j]):
+            first_val = z3.If(grid[11][j] == 0, 
+                If(grid[10][j] == 0, 
+                    If(grid[9][j] == 0, grid[8][j], grid[9][j]), grid[10][j]), grid[11][j])
+            c.add(Or(first_val == column_constr_bottom[j], col_sum == column_constr_bottom[j]))
+
+def two_by_two_subgrid(grid,c):
+    subgrid_2_size = 2
+
+    for i0 in range(len(grid)-1):
+        for j0 in range(len(grid[0])-1):
+            cells = [X[i][j] for i in range(i0,i0+subgrid_2_size) for j in range(j0,j0+subgrid_2_size)]
+            c.add(Sum([If(c == 0, 1, 0) for c in cells]) >= 1)
 
 
 s = Solver()
@@ -100,6 +133,8 @@ X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(12)] for i in range(12)]
 
 one_to_seven(X,s)
 row_col_four_twenty(X,s)
+blue_constraints(X,s)
+two_by_two_subgrid(X,s)
 
 tfs_array_constr = [ If(tfs_array[i][j] == 0, 
                   True, 
