@@ -1,6 +1,7 @@
 # Imports
 from z3 import *
 import numpy as np
+from collections import deque
 
 #==================================
 # Constants
@@ -17,7 +18,36 @@ def findNNs(cells, max_n):
         grid_number_c.append(s)
     return grid_number_c
 
-    
+def is_fully_connected(matrix):
+    rows, cols = len(matrix), len(matrix[0])
+    visited = [[False] * cols for _ in range(rows)]
+    q = deque()
+    connected_components = 0
+
+    for i in range(rows):
+        for j in range(cols):
+            if matrix[i][j] == 1 and not visited[i][j]:
+                # Start a new connected component
+                connected_components += 1
+                q.append((i, j))
+                visited[i][j] = True
+                while q:
+                    x, y = q.popleft()
+                    # Visit all the neighbors of the current cell
+                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                        nx, ny = x + dx, y + dy
+                        if (
+                            0 <= nx < rows
+                            and 0 <= ny < cols
+                            and matrix[nx][ny] == 1
+                            and not visited[nx][ny]
+                        ):
+                            q.append((nx, ny))
+                            visited[nx][ny] = True
+
+    # Check if there is only one connected component
+    return connected_components == 1
+
 
 #==================================
 # Twenty-Four-Seven Array
@@ -82,9 +112,18 @@ final_c = cell_c + grid_number_c + tfs_c + subgrid_22_empty
 
 s = Solver()
 s.add(final_c)
-if s.check() == sat:
-    m = s.model()
-    r = [[m.evaluate(X[i][j]) for j in range(12)] for i in range(12)]
-    print_matrix(r)
-else:
-    print("failed to solve")
+while True:
+    if s.check() == sat:
+        m = s.model()
+        r = [[m.evaluate(X[i][j]) for j in range(12)] for i in range(12)]
+        if is_fully_connected(r):
+            print_matrix(r)    
+            break
+        else:
+            print("rerun")
+            new_c = And([X[i][j] != r[i][j] for j in range(12) for i in range(12)])
+            print(new_c)
+            s.add(new_c)
+    else:
+        print("failed to solve")
+        break
