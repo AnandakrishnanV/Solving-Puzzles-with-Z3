@@ -66,12 +66,7 @@ s = Solver()
 s.add(final_c)
 if s.check() == sat:
     m = s.model()
-    r = [[m.evaluate(X[i][j]) for j in range(3)] for i in range(3)]
+    r = [[m.evaluate(X[i][j]) for j in range(12)] for i in range(12)]
     print_matrix(r)
 else:
     print("failed to solve")
-
-
-
-print(X)
-print(tfs_array)
