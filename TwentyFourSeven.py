@@ -1,21 +1,21 @@
 # Imports 
 from z3 import *
 
+#==================================
 # Twenty-Four-Seven Array
 tfs_array = (
-    (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-    (0, 0, 0, 1, 0, 0, 0, 0, 0, 6, 5, 0),
-    (0, 0, 0, 1, 0, 0, 0, 0, 0, 6, 5, 0),
-    (0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 6, 0),
-    (0, 4, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0),
-    (0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 7),
-    (0, 0, 6, 0, 0, 0, 0, 0, 3, 7, 0, 0),
-    (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-    (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-    (0, 0, 0, 7, 0, 5, 0, 0, 0, 0, 0, 0),
-    (0, 5, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0),
-    (0, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-    (0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0),
+        (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        (0, 0, 0, 1, 0, 0, 0, 0, 0, 6, 5, 0),
+        (0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 6, 0),
+        (0, 4, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0),
+        (0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 7),
+        (0, 0, 6, 0, 0, 0, 0, 0, 3, 7, 0, 0),
+        (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        (0, 0, 0, 7, 0, 5, 0, 0, 0, 0, 0, 0),
+        (0, 5, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0),
+        (0, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        (0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0),
 )
 
 # Blue constraints
@@ -32,10 +32,30 @@ def print_grid(g):
         lines.append(' '.join(str(x) for x in row))
     print('\n'.join(lines))
 
+#==================================
+def findNNs(cells, max_n):
+    grid_number_c = []
+    for n in range(1, 1 + max_n):
+        s = Sum([If(c == n, 1, 0) for c in cells]) == n
+        grid_number_c.append(s)
+    return grid_number_c
 
-s = Solver()
+def one_to_seven(grid,c):
+    # to ensure each cell is in 0..7
+    cell_c = [And(0 <= grid[i][j], grid[i][j] <= 7) for i in range(12) for j in range(12)]
 
-X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(12)] for i in range(12)]
+    starting_point = [0,5]
+    s_grid_size = 7
+
+    # for finding 1 1s to 7 7s
+    grid_number_c = []
+    for i0 in starting_point:
+        for j0 in starting_point:
+            cells = [grid[i][j] for i in range(i0,i0+s_grid_size) for j in range(j0,j0+s_grid_size)]
+            grid_number_c+=findNNs(cells, 7)
+
+    c.add(cell_c)
+    c.add(grid_number_c)
 
 def row_col_four_twenty(grid,c):
     sum_of_rows([row[:7] for row in grid[:7]], s)
@@ -73,7 +93,12 @@ def blue_constraints(grid,c):
 
 
 
+
 s = Solver()
+
+X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(12)] for i in range(12)]
+
+one_to_seven(X,s)
 row_col_four_twenty(X,s)
 
 tfs_array_constr = [ If(tfs_array[i][j] == 0, 
@@ -83,10 +108,9 @@ tfs_array_constr = [ If(tfs_array[i][j] == 0,
 
 s.add(tfs_array_constr)
 
-if s.check() == sat:                                    # (3)
-    m = s.model()                                       # (4)
-    r = [ [ m.evaluate(X[i][j]) for j in range(12) ]     # (5)
-          for i in range(12) ]
-    print_grid(r)                                     # (6)
+if s.check() == sat:
+    m = s.model()
+    r = [[m.evaluate(X[i][j]) for j in range(12)] for i in range(12)]
+    print_matrix(r)
 else:
-    print("failed to solve")                            # (7)
+    print("failed to solve")
