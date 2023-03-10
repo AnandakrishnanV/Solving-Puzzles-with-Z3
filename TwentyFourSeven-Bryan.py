@@ -116,13 +116,13 @@ while True:
     if s.check() == sat:
         m = s.model()
         r = [[m.evaluate(X[i][j]) for j in range(12)] for i in range(12)]
+        print_matrix(r)
         if is_fully_connected(r):
             print_matrix(r)    
             break
         else:
             print("rerun")
-            new_c = And([X[i][j] != r[i][j] for j in range(12) for i in range(12)])
-            print(new_c)
+            new_c = Not(And([X[i][j] == r[i][j] for j in range(12) for i in range(12)]))
             s.add(new_c)
     else:
         print("failed to solve")
