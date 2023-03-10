@@ -61,7 +61,7 @@ tfs_c = [ If(tfs_array[i][j] == 0,
                   X[i][j] == tfs_array[i][j]) 
                for i in range(12) for j in range(12) ]
 
-final_c = cell_c + grid_number_c 
+final_c = cell_c + grid_number_c + tfs_c
 
 s = Solver()
 s.add(final_c)
