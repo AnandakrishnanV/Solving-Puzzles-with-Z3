@@ -60,6 +60,16 @@ for i0 in starting_point:
         grid_number_c+=findNNs(cells, 7)
 
 
+final_c = cell_c + grid_number_c
+
+s = Solver()
+s.add(final_c)
+if s.check() == sat:
+    m = s.model()
+    r = [[m.evaluate(X[i][j]) for j in range(3)] for i in range(3)]
+    print_matrix(r)
+else:
+    print("failed to solve")
 
 
 
