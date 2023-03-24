@@ -27,6 +27,8 @@ column_constr_top = [6, 36, 30, 34, 27, 3, 40, 27, 0, 0, 7, 0]
 column_constr_bottom = [6, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 5]
 
 # Grid printer
+
+
 def print_grid(g):
     lines = []
     for row in g:
@@ -92,9 +94,11 @@ def four_in_each_row(grid, c):
 def sum_of_rows(grid, c):
     # print_grid(grid)
     for i in range(7):
-        c.add(Sum([If(grid[i][j] != 0, grid[i][j], 0) for j in range(7)]) == 20)
+        c.add(Sum([If(grid[i][j] != 0, grid[i][j], 0)
+              for j in range(7)]) == 20)
     for j in range(7):
-        c.add(Sum([If(grid[i][j] != 0, grid[i][j], 0) for i in range(7)]) == 20)
+        c.add(Sum([If(grid[i][j] != 0, grid[i][j], 0)
+              for i in range(7)]) == 20)
 
 
 def blue_constraints(grid, c):
@@ -112,7 +116,8 @@ def blue_constraints(grid, c):
                 ),
                 grid[i][0],
             )
-            c.add(Or(first_val == row_constr_left[i], row_sum == row_constr_left[i]))
+            c.add(
+                Or(first_val == row_constr_left[i], row_sum == row_constr_left[i]))
 
         if row_constr_right[i]:
             first_val = z3.If(
@@ -124,7 +129,8 @@ def blue_constraints(grid, c):
                 ),
                 grid[i][11],
             )
-            c.add(Or(first_val == row_constr_right[i], row_sum == row_constr_right[i]))
+            c.add(
+                Or(first_val == row_constr_right[i], row_sum == row_constr_right[i]))
 
     # columns
     for j in range(12):
@@ -141,7 +147,8 @@ def blue_constraints(grid, c):
                 grid[0][j],
             )
             c.add(
-                Or(first_val == column_constr_top[j], col_sum == column_constr_top[j])
+                Or(first_val == column_constr_top[j],
+                   col_sum == column_constr_top[j])
             )
 
         if column_constr_bottom[j]:
@@ -165,14 +172,34 @@ def blue_constraints(grid, c):
 def two_by_two_subgrid(grid, c):
     subgrid_2_size = 2
 
-    for i0 in range(len(grid) - 1):
-        for j0 in range(len(grid[0]) - 1):
+    for i in range(len(grid) - 1):
+        for j in range(len(grid[0]) - 1):
             cells = [
-                X[i][j]
-                for i in range(i0, i0 + subgrid_2_size)
-                for j in range(j0, j0 + subgrid_2_size)
+                X[k][l]
+                for k in range(i, i + subgrid_2_size)
+                for l in range(j, j + subgrid_2_size)
             ]
             c.add(Sum([If(c == 0, 1, 0) for c in cells]) >= 1)
+
+
+def get_neightbours(grid, i, j):
+    nb = []
+    if i > 0:
+        nb.append(grid[i-1][j])
+    if i < len(grid) - 1:
+        nb.append(grid[i+1][j])
+    if j > 0:
+        nb.append(grid[i][j-1])
+    if j < len(grid[0]) - 1:
+        nb.append(grid[i][j+1])
+    return nb
+
+
+def enforce_cell_neighbours(grid, c):
+
+    for i in range(len(grid)-1):
+        for j in range(len(grid)-1):
+            c.add(Implies(grid[i][j] != 0, Or([k != 0 for k in get_neightbours(grid, i, j)])))
 
 
 s = Solver()
@@ -183,6 +210,7 @@ one_to_seven(X, s)
 row_col_four_twenty(X, s)
 blue_constraints(X, s)
 two_by_two_subgrid(X, s)
+enforce_cell_neighbours(X, s)
 
 tfs_array_constr = [
     If(tfs_array[i][j] == 0, True, X[i][j] == tfs_array[i][j])
@@ -227,14 +255,16 @@ def is_fully_connected(matrix):
 while True:
     if s.check() == sat:
         m = s.model()
-        r = [[m.evaluate(X[i][j]).as_long() for j in range(12)] for i in range(12)]
+        r = [[m.evaluate(X[i][j]).as_long() for j in range(12)]
+             for i in range(12)]
         if is_fully_connected(r):
             print("found solution")
             print_matrix(r)
             break
         else:
             print("rerun")
-            new_c = Not(And([X[i][j] == r[i][j] for i in range(12) for j in range(12)]))
+            new_c = Not(And([X[i][j] == r[i][j]
+                        for i in range(12) for j in range(12)]))
             s.add(new_c)
     else:
         print("failed to solve")
