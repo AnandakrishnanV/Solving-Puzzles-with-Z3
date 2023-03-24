@@ -1,4 +1,6 @@
-#Jane Street 2018
+# Jane Street: June 2020
+# Twenty Four Seven
+
 # The grid is incomplete. Place numbers in some of the empty cells below so that in total the grid 
 # contains one 1, two 2’s, etc., up to seven 7’s. Furthermore, each row and column must contain 
 # exactly 4 numbers which sum to 20. Finally, the numbered cells must form a connected region*, 
