@@ -78,7 +78,6 @@ def check_within_range(grid, c, low, high):
 
 
 def blue_constraints(grid, c, n, z, row_constr_left, row_constr_right, column_constr_top, column_constr_bottom, if_only_first):
-    z = z - 1
     mi = n - 1
     # left vertical
     for i in range(n):
