@@ -1,6 +1,7 @@
 # Imports
 from z3 import *
 from collections import deque
+from functools import reduce
 
 # ==================================
 # Twenty-Four-Seven Array
@@ -251,6 +252,44 @@ def is_fully_connected(matrix):
     # Check if there is only one connected component
     return connected_components == 1
 
+def connected_zeros(matrix):
+    rows, cols = len(matrix), len(matrix[0])
+    visited = [[False] * cols for _ in range(rows)]
+    q = deque()
+    connected_components = 0
+    len_connected_components = []
+
+    for i in range(rows):
+        for j in range(cols):
+            if matrix[i][j] == 0 and not visited[i][j]:
+                # Start a new connected component
+                connected_components += 1
+                q.append((i, j))
+                visited[i][j] = True
+                counter = 0
+                while q:
+                    x, y = q.popleft()
+                    counter = counter+1
+                    # Visit all the neighbors of the current cell
+                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                        nx, ny = x + dx, y + dy
+                        if (
+                            0 <= nx < rows
+                            and 0 <= ny < cols
+                            and matrix[nx][ny] == 0
+                            and not visited[nx][ny]
+                        ):
+                            q.append((nx, ny))
+                            visited[nx][ny] = True
+
+                len_connected_components.append(counter)
+    # Check if there is only one connected component
+    return len_connected_components
+
+def calculate_answer(grid):
+   print("Final Answer : ")
+   print(reduce((lambda x,y: x*y), connected_zeros(grid)))
+   print("Execution Complete!!")
 
 while True:
     if s.check() == sat:
@@ -261,6 +300,7 @@ while True:
         if is_fully_connected(r):
             print("found solution")
             print_matrix(r)
+            calculate_answer(r)
             break
         else:
             print("rerun")
