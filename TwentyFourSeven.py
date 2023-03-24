@@ -47,17 +47,17 @@ def one_to_seven(grid, c):
 
 
 def row_col_four_twenty(grid, c):
-    constraints.sum_of_rows([row[:7] for row in grid[:7]], s, 20)
-    constraints.count_in_each_r_and_c([row[:7] for row in grid[:7]], s, 4)
+    constraints.sum_of_rows([row[:7] for row in grid[:7]], c, 20)
+    constraints.count_in_each_r_and_c([row[:7] for row in grid[:7]], c, 4)
 
-    constraints.sum_of_rows([row[5:] for row in grid[:7]], s, 20)
-    constraints.count_in_each_r_and_c([row[5:] for row in grid[:7]], s, 4)
+    constraints.sum_of_rows([row[5:] for row in grid[:7]], c, 20)
+    constraints.count_in_each_r_and_c([row[5:] for row in grid[:7]], c, 4)
 
-    constraints.sum_of_rows([row[:7] for row in grid[5:]], s,20)
-    constraints.count_in_each_r_and_c([row[:7] for row in grid[5:]], s, 4)
+    constraints.sum_of_rows([row[:7] for row in grid[5:]], c,20)
+    constraints.count_in_each_r_and_c([row[:7] for row in grid[5:]], c, 4)
 
-    constraints.sum_of_rows([row[5:] for row in grid[5:]], s,20)
-    constraints.count_in_each_r_and_c([row[5:] for row in grid[5:]], s, 4)
+    constraints.sum_of_rows([row[5:] for row in grid[5:]], c,20)
+    constraints.count_in_each_r_and_c([row[5:] for row in grid[5:]], c, 4)
 
 s = Solver()
 
