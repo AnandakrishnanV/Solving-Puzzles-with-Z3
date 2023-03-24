@@ -3,6 +3,9 @@ from z3 import *
 from collections import deque
 from functools import reduce
 import time
+
+import constraints
+import helper
 # ==================================
 # Twenty-Four-Seven Array
 tfs_array = (
@@ -27,31 +30,9 @@ row_constr_right = [4, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 7]
 column_constr_top = [6, 36, 30, 34, 27, 3, 40, 27, 0, 0, 7, 0]
 column_constr_bottom = [6, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 5]
 
-# Grid printer
-
-
-def print_grid(g):
-    lines = []
-    for row in g:
-        lines.append(" ".join(str(x) for x in row))
-    print("\n".join(lines))
-
-
-# ==================================
-def findNNs(cells, max_n):
-    grid_number_c = []
-    for n in range(1, 1 + max_n):
-        s = Sum([If(c == n, 1, 0) for c in cells]) == n
-        grid_number_c.append(s)
-    return grid_number_c
-
+# =================================
 
 def one_to_seven(grid, c):
-    # to ensure each cell is in 0..7
-    cell_c = [
-        And(0 <= grid[i][j], grid[i][j] <= 7) for i in range(12) for j in range(12)
-    ]
-
     starting_point = [0, 5]
     s_grid_size = 7
 
@@ -59,47 +40,25 @@ def one_to_seven(grid, c):
     grid_number_c = []
     for i0 in starting_point:
         for j0 in starting_point:
-            cells = [
-                grid[i][j]
-                for i in range(i0, i0 + s_grid_size)
-                for j in range(j0, j0 + s_grid_size)
-            ]
-            grid_number_c += findNNs(cells, 7)
+            i1 = i0+s_grid_size
+            j1 = j0+s_grid_size
+            grid_number_c += constraints.findNNs([row[j0:j1] for row in grid[i0:i1]],s_grid_size)
 
-    c.add(cell_c)
     c.add(grid_number_c)
 
 
 def row_col_four_twenty(grid, c):
-    sum_of_rows([row[:7] for row in grid[:7]], s)
-    four_in_each_row([row[:7] for row in grid[:7]], s)
+    constraints.sum_of_rows([row[:7] for row in grid[:7]], s, 20)
+    constraints.count_in_each_r_and_c([row[:7] for row in grid[:7]], s, 4)
 
-    sum_of_rows([row[5:] for row in grid[:7]], s)
-    four_in_each_row([row[5:] for row in grid[:7]], s)
+    constraints.sum_of_rows([row[5:] for row in grid[:7]], s, 20)
+    constraints.count_in_each_r_and_c([row[5:] for row in grid[:7]], s, 4)
 
-    sum_of_rows([row[:7] for row in grid[5:]], s)
-    four_in_each_row([row[:7] for row in grid[5:]], s)
+    constraints.sum_of_rows([row[:7] for row in grid[5:]], s,20)
+    constraints.count_in_each_r_and_c([row[:7] for row in grid[5:]], s, 4)
 
-    sum_of_rows([row[5:] for row in grid[5:]], s)
-    four_in_each_row([row[5:] for row in grid[5:]], s)
-
-
-def four_in_each_row(grid, c):
-    # print_grid(grid)
-    for i in range(7):
-        c.add(Sum([If(grid[i][j] != 0, 1, 0) for j in range(7)]) == 4)
-    for j in range(7):
-        c.add(Sum([If(grid[i][j] != 0, 1, 0) for i in range(7)]) == 4)
-
-
-def sum_of_rows(grid, c):
-    # print_grid(grid)
-    for i in range(7):
-        c.add(Sum([If(grid[i][j] != 0, grid[i][j], 0)
-              for j in range(7)]) == 20)
-    for j in range(7):
-        c.add(Sum([If(grid[i][j] != 0, grid[i][j], 0)
-              for i in range(7)]) == 20)
+    constraints.sum_of_rows([row[5:] for row in grid[5:]], s,20)
+    constraints.count_in_each_r_and_c([row[5:] for row in grid[5:]], s, 4)
 
 
 def blue_constraints(grid, c):
@@ -169,39 +128,6 @@ def blue_constraints(grid, c):
                 )
             )
 
-
-def two_by_two_subgrid(grid, c):
-    subgrid_2_size = 2
-
-    for i in range(len(grid) - 1):
-        for j in range(len(grid[0]) - 1):
-            cells = [
-                X[k][l]
-                for k in range(i, i + subgrid_2_size)
-                for l in range(j, j + subgrid_2_size)
-            ]
-            c.add(Sum([If(c == 0, 1, 0) for c in cells]) >= 1)
-
-
-def get_neightbours(grid, i, j):
-    nb = []
-    if i > 0:
-        nb.append(grid[i-1][j])
-    if i < len(grid) - 1:
-        nb.append(grid[i+1][j])
-    if j > 0:
-        nb.append(grid[i][j-1])
-    if j < len(grid[0]) - 1:
-        nb.append(grid[i][j+1])
-    return nb
-
-
-def enforce_cell_neighbours(grid, c):
-    for i in range(len(grid)-1):
-        for j in range(len(grid)-1):
-            c.add(Implies(grid[i][j] != 0, Or([k != 0 for k in get_neightbours(grid, i, j)])))
-
-
 s = Solver()
 
 X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(12)] for i in range(12)]
@@ -209,7 +135,8 @@ X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(12)] for i in range(12)]
 one_to_seven(X, s)
 row_col_four_twenty(X, s)
 blue_constraints(X, s)
-two_by_two_subgrid(X, s)
+constraints.check_n_by_n_subgrid_empty_space(X, s, 2, 1)
+constraints.check_within_range(X, s, 0, 7)
 
 tfs_array_constr = [
     If(tfs_array[i][j] == 0, True, X[i][j] == tfs_array[i][j])
@@ -219,74 +146,9 @@ tfs_array_constr = [
 
 s.add(tfs_array_constr)
 
-
-def is_fully_connected(matrix):
-    rows, cols = len(matrix), len(matrix[0])
-    visited = [[False] * cols for _ in range(rows)]
-    q = deque()
-    connected_components = 0
-
-    for i in range(rows):
-        for j in range(cols):
-            if matrix[i][j] >= 1 and not visited[i][j]:
-                # Start a new connected component
-                connected_components += 1
-                q.append((i, j))
-                visited[i][j] = True
-                while q:
-                    x, y = q.popleft()
-                    # Visit all the neighbors of the current cell
-                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-                        nx, ny = x + dx, y + dy
-                        if (
-                            0 <= nx < rows
-                            and 0 <= ny < cols
-                            and matrix[nx][ny] >= 1
-                            and not visited[nx][ny]
-                        ):
-                            q.append((nx, ny))
-                            visited[nx][ny] = True
-
-    # Check if there is only one connected component
-    return connected_components == 1
-
-def connected_zeros(matrix):
-    rows, cols = len(matrix), len(matrix[0])
-    visited = [[False] * cols for _ in range(rows)]
-    q = deque()
-    connected_components = 0
-    len_connected_components = []
-
-    for i in range(rows):
-        for j in range(cols):
-            if matrix[i][j] == 0 and not visited[i][j]:
-                # Start a new connected component
-                connected_components += 1
-                q.append((i, j))
-                visited[i][j] = True
-                counter = 0
-                while q:
-                    x, y = q.popleft()
-                    counter = counter+1
-                    # Visit all the neighbors of the current cell
-                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-                        nx, ny = x + dx, y + dy
-                        if (
-                            0 <= nx < rows
-                            and 0 <= ny < cols
-                            and matrix[nx][ny] == 0
-                            and not visited[nx][ny]
-                        ):
-                            q.append((nx, ny))
-                            visited[nx][ny] = True
-
-                len_connected_components.append(counter)
-    # Check if there is only one connected component
-    return len_connected_components
-
 def calculate_answer(grid):
    print("Final Answer : ")
-   print(reduce((lambda x,y: x*y), connected_zeros(grid)))
+   print(reduce((lambda x,y: x*y), helper.count_region(grid, count_zero=True)))
    print("Execution Complete!!")
 
 # enforce_cell_neighbours(X, s)
@@ -304,7 +166,7 @@ while True:
                 print(stat, stats.get_key_value(stat))
 
         r = [[m.evaluate(X[i][j]).as_long() for j in range(12)] for i in range(12)]
-        if is_fully_connected(r):
+        if len(helper.count_region(r, count_zero=False))==1:
             print("found solution")
             print_matrix(r)
             calculate_answer(r)
