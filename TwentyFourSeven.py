@@ -227,6 +227,8 @@ def is_fully_connected(matrix):
 while True:
     if s.check() == sat:
         m = s.model()
+        print("stats for this run")
+        print(s.statistics())
         r = [[m.evaluate(X[i][j]).as_long() for j in range(12)] for i in range(12)]
         if is_fully_connected(r):
             print("found solution")
