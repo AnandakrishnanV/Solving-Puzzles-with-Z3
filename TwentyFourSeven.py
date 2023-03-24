@@ -223,12 +223,19 @@ def is_fully_connected(matrix):
     # Check if there is only one connected component
     return connected_components == 1
 
+stats_to_print = ["decisions","solve-eqs-steps","time","num allocs","memory"]
 
 while True:
     if s.check() == sat:
+        print("------------------------")
+        # print(s.statistics().keys()) 
         m = s.model()
         print("stats for this run")
-        print(s.statistics())
+        stats = s.statistics()
+        for stat in stats_to_print:
+            if stat in stats.keys():
+                print(stat, stats.get_key_value(stat))
+
         r = [[m.evaluate(X[i][j]).as_long() for j in range(12)] for i in range(12)]
         if is_fully_connected(r):
             print("found solution")
@@ -238,6 +245,40 @@ while True:
             print("rerun")
             new_c = Not(And([X[i][j] == r[i][j] for i in range(12) for j in range(12)]))
             s.add(new_c)
+        
     else:
         print("failed to solve")
         break
+
+# stats
+# (:added-eqs                   920973
+#  :arith-eq-adapter            17514
+#  :arith-bound-propagations-lp 107775
+#  :arith-conflicts             690
+#  :arith-diseq                 435864
+#  :arith-fixed-eqs             17865
+#  :arith-lower                 884119
+#  :arith-make-feasible         30799
+#  :arith-max-columns           1805
+#  :arith-max-rows              412
+#  :arith-offset-eqs            42545
+#  :arith-upper                 440466
+#  :binary-propagations         1821976
+#  :conflicts                   2202
+#  :decisions                   18672
+#  :del-clause                  16466
+#  :final-checks                1
+#  :max-memory                  35.82
+#  :memory                      21.80
+#  :minimized-lits              19228
+#  :mk-bool-var                 36447
+#  :mk-clause                   23229
+#  :mk-clause-binary            22257
+#  :num-allocs                  131945840
+#  :num-checks                  1
+#  :propagations                2022302
+#  :restarts                    18
+#  :rlimit-count                8143703
+#  :solve-eqs-elim-vars         21
+#  :solve-eqs-steps             21
+#  :time                        2.97)
