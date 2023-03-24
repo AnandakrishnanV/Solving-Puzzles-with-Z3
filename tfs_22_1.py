@@ -87,6 +87,17 @@ for n in range(4):
         [[Int("x_%s_%s_%s" % (n, i + 1, j + 1)) for j in range(7)] for i in range(7)]
     )
 
+def final_constraint(Xs):
+    ROWS = 7
+    COLS = 7
+    new_sum = [[None for i in range(ROWS)] for j in range(COLS)]
+    for i in range(ROWS):
+        for j in range(COLS):
+            new_sum[i][j] = Sum([X[i][j] for X in Xs])
+    constraints.check_within_range(new_sum, s, 0, 28)
+    constraints.sum_of_rows(new_sum, s, 80)
+
+
 for index, x in enumerate(Xs):
     s.add(constraints.findNNs(x, 7))
     constraints.check_within_range(x, s, 0, 7)
@@ -116,17 +127,7 @@ for index, x in enumerate(Xs):
         bottom_array[index],
         if_only_first=True,
     )
-
-
-def final_constraint(Xs):
-    ROWS = 7
-    COLS = 7
-    new_sum = [[None for i in ROWS] for j in COLS]
-    for i in range(ROWS):
-        for j in range(COLS):
-            new_sum[i][j] = Sum([X[i][j] for X in Xs])
-    constraints.check_within_range(new_sum, s, 0, 28)
-    constraints.sum_of_rows(new_sum, s, 80)
+final_constraint(Xs)
 
 
 stats_to_print = ["decisions", "solve-eqs-steps", "time", "num allocs", "memory"]
@@ -141,12 +142,15 @@ while True:
             if stat in stats.keys():
                 print(stat, stats.get_key_value(stat))
         all_connected = True
+        
         for X in Xs:
             r = [[m.evaluate(X[i][j]).as_long() for j in range(7)] for i in range(7)]
             if len(helper.count_region(r, count_zero=False)) == 1:
                 pass
             else:
                 all_connected = False
+                new_c = Not(And([X[i][j] == r[i][j] for i in range(7) for j in range(7)]))
+                s.add(new_c)
 
         if all_connected:
             print("found solution")
@@ -159,7 +163,6 @@ while True:
             break
         else:
             print("rerun")
-            new_c = Not(And([X[i][j] == r[i][j] for i in range(7) for j in range(7)]))
             s.add(new_c)
 
     else:
