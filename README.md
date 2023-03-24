@@ -17,6 +17,6 @@ Once completed, you can submit as your answer the product of the areas of the co
   - [x] must contain exactly 4 numbers that sum to 20
   - [ ] Enforce the blue number, where it could be the sum or the first number
 - [x] Each 2x2 subsquare must have at least one empty cell
-- [ ] Numbered cells must form a connected region
-- [ ] Identify empty connected regions, count number of cells in each region
-- [ ] Multiply the result
+- [x] Numbered cells must form a connected region
+- [x] Identify empty connected regions, count number of cells in each region
+- [x] Multiply the result
