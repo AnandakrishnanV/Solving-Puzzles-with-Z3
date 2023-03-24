@@ -154,12 +154,15 @@ while True:
 
         if all_connected:
             print("found solution")
+            res = sum([sum([m.evaluate(X[i][j]).as_long() for X in Xs])**2 for j in range(7) for i in range(7)])
+
             for X in Xs:
                 r = [
                     [m.evaluate(X[i][j]).as_long() for j in range(7)] for i in range(7)
                 ]
                 print_matrix(r)
                 print("-------")
+            print("res= ",res)
             break
         else:
             print("rerun")
