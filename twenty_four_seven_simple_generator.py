@@ -2,7 +2,6 @@ from z3 import *
 from functools import reduce
 import time
 import random
-import copy
 import numpy as np
 
 import constraints
@@ -36,7 +35,7 @@ iteration_count = 0
 def one_to_seven(grid, c):
     s_grid_size = 7
 
-    c.add(constraints.findNNs(grid, s_grid_size))
+    return constraints.findNNs(grid, s_grid_size)
 
 
 def row_col_four_twenty(grid, c):
@@ -44,41 +43,68 @@ def row_col_four_twenty(grid, c):
     constraints.count_in_each_r_and_c(grid, c, 4)
 
 
-def add_random_numbers(matrix, n):
+# def add_random_numbers(matrix, n):
 
+#     number_counts = copy.deepcopy(dict_count)
+
+#     array_tuple = np.array(matrix)
+
+#     for i in range(n):
+#         x = random.randint(0, len(matrix)-1)
+#         y = random.randint(0, len(matrix[0])-1)
+
+    # number_set = False
+    # while not number_set:
+    #     new_number = random.randint(1, 7)
+    #     if number_counts[new_number] < new_number:
+    #         array_tuple[x][y] = new_number
+    #         number_set = True
+    #         number_counts[new_number] += 1
+
+#     matrix = tuple(map(tuple, array_tuple))
+#     return matrix
+
+
+# def add_tfs_constraint(grid, c):
+#     new_tfs = copy.deepcopy(tfs_array)
+#     new_tfs_tuple = add_random_numbers(new_tfs, 1)
+#     my_ints = [[Int(str(j)) for j in i] for i in new_tfs_tuple]
+#     print_matrix(my_ints)
+#     time.sleep(5)
+#     tfs_array_constr = [
+#         If(my_ints[i][j] == 0, True, grid[i][j] == my_ints[i][j])
+#         for i in range(7)
+#         for j in range(7)
+#     ]
+
+#     return tfs_array_constr
+
+def add_tfs_constraint(grid, s):
+    input_array = np.zeros((7, 7))
     number_counts = copy.deepcopy(dict_count)
 
-    array_tuple = np.array(matrix)
+    tfs_array_constr = []
+    for i in range(7):
+        for j in range(7):
+            if random.randint(1, 9) == 2:
 
-    for i in range(n):
-        x = random.randint(0, len(matrix)-1)
-        y = random.randint(0, len(matrix[0])-1)
+                number_set = False
+                while not number_set:
+                    new_number = random.randint(1, 7)
+                    if number_counts[new_number] < new_number:
+                        tfs_array_constr.append(
+                            If(random.randint(1, 7) == 0, True, grid[i][j] == tfs_array[i][j]))
+                        input_array[i][j] = new_number
+                        number_set = True
+                        number_counts[new_number] += 1
+            else:
+                tfs_array_constr.append(
+                    If(tfs_array[i][j] == 0, True, grid[i][j] == tfs_array[i][j]))
 
-        number_set = False
-        while not number_set:
-            new_number = random.randint(1, 7)
-            if number_counts[new_number] < new_number:
-                array_tuple[x][y] = new_number
-                number_set = True
-                number_counts[new_number] += 1
-
-    matrix = tuple(map(tuple, array_tuple))
-    return matrix
-
-
-def add_tfs_constraint(grid, c):
-    new_tfs = copy.deepcopy(tfs_array)
-    new_tfs_tuple = add_random_numbers(new_tfs, 27)
-    my_ints = [[Int(str(j)) for j in i] for i in new_tfs_tuple]
-    print_matrix(my_ints)
-    time.sleep(5)
-    tfs_array_constr = [
-        If(my_ints[i][j] == 0, True, grid[i][j] == my_ints[i][j])
-        for i in range(7)
-        for j in range(7)
-    ]
-
-    c.add(tfs_array_constr)
+    print("new array:")
+    print(input_array)
+    time.sleep(10)
+    return tfs_array_constr
 
 
 def calculate_answer(grid):
@@ -94,12 +120,12 @@ def check_sat(grid, s):
     start_time = time.time_ns()
     while True:
         if s.check() == sat:
-            print("sat")
             m = s.model()
 
             r = [[m.evaluate(grid[i][j]).as_long() for j in range(7)]
                  for i in range(7)]
-            if len(helper.count_region(r, count_zero=False)) == 1:
+            #one or two connected regions
+            if len(helper.count_region(r, count_zero=False)) < 3:
                 print("found solution")
                 print_matrix(r)
                 calculate_answer(r)
@@ -128,16 +154,13 @@ def set_grid():
 
     X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(7)] for i in range(7)]
 
-    one_to_seven(X, s)
+    s.add(one_to_seven(X, s))
     row_col_four_twenty(X, s)
 
     constraints.check_n_by_n_subgrid_empty_space(X, s, 2, 1)
     constraints.check_within_range(X, s, 0, 7)
 
-    add_tfs_constraint(X, s)
-
-    print(X)
-    print(s)
+    s.add(add_tfs_constraint(X, s))
     check_sat(X, s)
 
 
