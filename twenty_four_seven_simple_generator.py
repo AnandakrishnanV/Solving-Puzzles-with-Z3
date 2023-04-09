@@ -43,41 +43,6 @@ def row_col_four_twenty(grid, c):
     constraints.count_in_each_r_and_c(grid, c, 4)
 
 
-# def add_random_numbers(matrix, n):
-
-#     number_counts = copy.deepcopy(dict_count)
-
-#     array_tuple = np.array(matrix)
-
-#     for i in range(n):
-#         x = random.randint(0, len(matrix)-1)
-#         y = random.randint(0, len(matrix[0])-1)
-
-    # number_set = False
-    # while not number_set:
-    #     new_number = random.randint(1, 7)
-    #     if number_counts[new_number] < new_number:
-    #         array_tuple[x][y] = new_number
-    #         number_set = True
-    #         number_counts[new_number] += 1
-
-#     matrix = tuple(map(tuple, array_tuple))
-#     return matrix
-
-
-# def add_tfs_constraint(grid, c):
-#     new_tfs = copy.deepcopy(tfs_array)
-#     new_tfs_tuple = add_random_numbers(new_tfs, 1)
-#     my_ints = [[Int(str(j)) for j in i] for i in new_tfs_tuple]
-#     print_matrix(my_ints)
-#     time.sleep(5)
-#     tfs_array_constr = [
-#         If(my_ints[i][j] == 0, True, grid[i][j] == my_ints[i][j])
-#         for i in range(7)
-#         for j in range(7)
-#     ]
-
-#     return tfs_array_constr
 
 def add_tfs_constraint(grid, s):
     input_array = np.zeros((7, 7))
