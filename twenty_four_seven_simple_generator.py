@@ -66,9 +66,7 @@ def add_tfs_constraint(grid, s):
                 tfs_array_constr.append(
                     If(tfs_array[i][j] == 0, True, grid[i][j] == tfs_array[i][j]))
 
-    print("new array:")
-    print(input_array)
-    time.sleep(10)
+    print("generating a new random matrix")
     return tfs_array_constr
 
 
