@@ -81,14 +81,19 @@ def check_sat(grid, s):
     stats_to_print = ["decisions", "solve-eqs-steps",
                       "time", "num allocs", "memory"]
     start_time = time.time_ns()
+    iterCount = 0
     while True:
+        if iterCount>=200:
+            print("iteration too high, regenerating...")
+            return False
+        iterCount+=1
         if s.check() == sat:
             m = s.model()
 
             r = [[m.evaluate(grid[i][j]).as_long() for j in range(7)]
                  for i in range(7)]
             #one or two connected regions
-            if len(helper.count_region(r, count_zero=False)) < 3: #to make it run, currently setting no of connected regions to 1 or 2
+            if len(helper.count_region(r, count_zero=False)) < 2: #currently setting no of connected regions to 1 or 2
                 print("found solution")
                 print_matrix(r)
                 calculate_answer(r)
@@ -101,7 +106,7 @@ def check_sat(grid, s):
         else:
             print("failed to solve")
             print("setting new random integers")
-            set_grid()
+            return False
 
     end_time = time.time_ns()
 
@@ -109,7 +114,7 @@ def check_sat(grid, s):
     print("elapsed time (ns):", duration_nanoseconds)
     duration_minutes = duration_nanoseconds / (60 * 1e9)
     print("elapsed time (min):", duration_minutes)
-
+    return True
 
 def set_grid():
 
@@ -124,7 +129,9 @@ def set_grid():
     constraints.check_within_range(X, s, 0, 7)
 
     s.add(add_tfs_constraint(X, s))
-    check_sat(X, s)
+    found = False
+    while not found:
+        found = check_sat(X,s)
 
 
 # start generator
