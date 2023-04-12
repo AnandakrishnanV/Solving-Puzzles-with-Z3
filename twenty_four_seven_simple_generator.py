@@ -88,7 +88,7 @@ def check_sat(grid, s):
             r = [[m.evaluate(grid[i][j]).as_long() for j in range(7)]
                  for i in range(7)]
             #one or two connected regions
-            if len(helper.count_region(r, count_zero=False)) < 3:
+            if len(helper.count_region(r, count_zero=False)) < 3: #to make it run, currently setting no of connected regions to 1 or 2
                 print("found solution")
                 print_matrix(r)
                 calculate_answer(r)
@@ -106,9 +106,9 @@ def check_sat(grid, s):
     end_time = time.time_ns()
 
     duration_nanoseconds = end_time-start_time
-    print("elapsed time:", duration_nanoseconds)
+    print("elapsed time (ns):", duration_nanoseconds)
     duration_minutes = duration_nanoseconds / (60 * 1e9)
-    print("elapsed time:", duration_minutes)
+    print("elapsed time (min):", duration_minutes)
 
 
 def set_grid():
