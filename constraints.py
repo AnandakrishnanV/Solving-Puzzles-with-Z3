@@ -57,11 +57,11 @@ def check_n_by_n_subgrid_empty_space(grid, c, subgrid_size, min_empty):
             c.add(Sum([If(c == 0, 1, 0) for c in cells]) >= min_empty)
 
 
-def enforce_cell_neighbours(grid, c):
-    for i in range(len(grid)-1):
-        for j in range(len(grid)-1):
-            c.add(Implies(grid[i][j] != 0, Or(
-                [k != 0 for k in get_neighbours(grid, i, j)])))
+# def enforce_cell_neighbours(grid, c):
+#     for i in range(len(grid)-1):
+#         for j in range(len(grid)-1):
+#             c.add(Implies(grid[i][j] != 0, Or(
+#                 [k != 0 for k in get_neighbours(grid, i, j)])))
 
 
 def check_within_range(grid, c, low, high):
