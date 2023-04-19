@@ -15,7 +15,7 @@ Once completed, you can submit as your answer the product of the areas of the co
 - [x] In each 7x7 grid, 
   - [x] have to have 1x1, 2x2, 3x3, ....., 7x7
   - [x] must contain exactly 4 numbers that sum to 20
-  - [ ] Enforce the blue number, where it could be the sum or the first number
+  - [x] Enforce the blue number, where it could be the sum or the first number
 - [x] Each 2x2 subsquare must have at least one empty cell
 - [x] Numbered cells must form a connected region
 - [x] Identify empty connected regions, count number of cells in each region
