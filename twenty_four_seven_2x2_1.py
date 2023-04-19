@@ -1,5 +1,19 @@
+# Jane Street: March 2019
+# Twenty Four Seven 2-by-2 #1
+
+# Each of the grids above is incomplete. Place numbers in some of the empty cells so that in total 
+# each grid’s interior contains one 1, two 2’s, etc., up to seven 7’s. Furthermore, each row and column 
+# within each grid must contain exactly 4 numbers which sum to 20. Finally, the numbered cells must form 
+# a connected region, but every 2-by-2 subsquare in the completed grid must contain at least one empty cell.
+
+# Some numbers have been placed inside each grid. Additionally, some numbers have been placed outside of 
+# the grids. These numbers indicate the first value seen in the corresponding row or column when looking 
+# into the grid from that location.
+
+# Once each of the grids is complete, create a 7-by-7 grid by “adding” the four grids’ interiors together 
+# (as if they were 7-by-7 matrices). The answer to this month’s puzzle is the sum of the squares of the values in this final grid.
+
 from z3 import *
-from functools import reduce
 import time
 
 import constraints

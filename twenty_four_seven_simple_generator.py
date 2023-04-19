@@ -51,6 +51,7 @@ def add_tfs_constraint(grid, s):
     tfs_array_constr = []
     for i in range(7):
         for j in range(7):
+            #Initialize with approx 5 random integers, in different positions
             if random.randint(1, 9) == 2:
 
                 number_set = False
@@ -83,7 +84,7 @@ def check_sat(grid, s):
     start_time = time.time_ns()
     iterCount = 0
     while True:
-        if iterCount>=200:
+        if iterCount>=1500:
             print("iteration too high, regenerating...")
             return False
         iterCount+=1

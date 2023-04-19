@@ -6,8 +6,8 @@
 # within each grid must contain exactly 4 numbers which sum to 20. Finally, the numbered cells must form 
 # a connected region, but every 2-by-2 subsquare in the completed grid must contain at least one empty cell.
 
-# Some numbers have been placed inside each grid. Additionally, some blue numbers have been placed outside of 
-# the grids. These blue numbers indicate the first value seen in the corresponding row or column when looking 
+# Some numbers have been placed inside each grid. Additionally, some numbers have been placed outside of 
+# the grids. These numbers indicate the first value seen in the corresponding row or column when looking 
 # into the grid from that location.
 
 # Once each of the grids is complete, create a 7-by-7 grid by “adding” the four grids’ interiors together 
@@ -15,7 +15,6 @@
 
 
 from z3 import *
-from functools import reduce
 import time
 
 import constraints

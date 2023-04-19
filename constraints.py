@@ -83,6 +83,7 @@ def blue_constraints(grid, c, n, z, row_constr_left, row_constr_right, column_co
     for i in range(n):
         row_sum = z3.Sum(grid[i])
 
+        #Checking for first non-zero element
         if row_constr_left[i]:
             first_val = z3.If(And(z > 0, grid[i][0] == 0),
                               If(And(z > 1, grid[i][1] == 0),
