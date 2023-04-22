@@ -8,7 +8,7 @@ Some numbers have been placed inside the grid. Additionally, some blue numbers h
 
 Once completed, you can submit as your answer the product of the areas of the connected groups of orthogonally adjacent empty squares in the grid.
 
-### TODO 
+### Breakdown 
 - [x] 12x12 grid in total
 - [x] 7x7 grid division
 - [x] In each 7x7 grid, 
@@ -21,4 +21,4 @@ Once completed, you can submit as your answer the product of the areas of the co
 - [x] Multiply the result
 
 ### Setup-Instructions
-The 4 different question identified by team, of 3 different variations can be solved using their respective python impelmentation. The simple generator is currently configured to only generate a single 7x7 grid, owning to time constraints. DISCLAIMER: You may have to run it a few times to receive a satisfiable problem as the connected region condition can only be enfoced through multiple iterations.
+The 4 different question identified by team, of 3 different variations can be solved using their respective python impelmentation. The simple generator is currently configured to only generate a single 7x7 grid, owning to time constraints associated with the connected region constraint. All are python files and can be run from the terminal. DISCLAIMER: You may have to run it a few times to receive a satisfiable output problem as the connected region condition can only be enfoced through multiple iterations, we have currently set the value to be either 1 or 2 connected regions for a faster output time, and can be changed in the generator file.
