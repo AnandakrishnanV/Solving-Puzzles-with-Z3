@@ -1,6 +1,8 @@
+#auxilary helper functions
+
 from collections import deque
 
-
+# orthogonal neighbours
 def get_neighbours(grid, i, j):
     nb = []
     if i > 0:
@@ -13,38 +15,7 @@ def get_neighbours(grid, i, j):
         nb.append(grid[i][j + 1])
     return nb
 
-
-# def is_fully_connected(matrix):
-#     rows, cols = len(matrix), len(matrix[0])
-#     visited = [[False] * cols for _ in range(rows)]
-#     q = deque()
-#     connected_components = 0
-
-#     for i in range(rows):
-#         for j in range(cols):
-#             if matrix[i][j] >= 1 and not visited[i][j]:
-#                 # Start a new connected component
-#                 connected_components += 1
-#                 q.append((i, j))
-#                 visited[i][j] = True
-#                 while q:
-#                     x, y = q.popleft()
-#                     # Visit all the neighbors of the current cell
-#                     for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-#                         nx, ny = x + dx, y + dy
-#                         if (
-#                             0 <= nx < rows
-#                             and 0 <= ny < cols
-#                             and matrix[nx][ny] >= 1
-#                             and not visited[nx][ny]
-#                         ):
-#                             q.append((nx, ny))
-#                             visited[nx][ny] = True
-
-#     # Check if there is only one connected component
-#     return connected_components == 1
-
-
+# calculates the number of connected regions in the input matrix
 def count_region(matrix, count_zero):
     rows, cols = len(matrix), len(matrix[0])
     visited = [[False] * cols for _ in range(rows)]

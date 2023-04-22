@@ -60,7 +60,7 @@ def one_to_seven(grid, c):
 
     c.add(grid_number_c)
 
-
+# Divides grid into corresponding 7x7s, add conditions to each for frequency for 5 and sum of 20
 def row_col_four_twenty(grid, c):
     constraints.sum_of_rows([row[:7] for row in grid[:7]], c, 20)
     constraints.count_in_each_r_and_c([row[:7] for row in grid[:7]], c, 4)
@@ -80,6 +80,7 @@ X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(12)] for i in range(12)]
 
 one_to_seven(X, s)
 row_col_four_twenty(X, s)
+
 
 constraints.blue_constraints(X, s, 12, 3, row_constr_left, row_constr_right, column_constr_top, column_constr_bottom, False)
 constraints.check_n_by_n_subgrid_empty_space(X, s, 2, 1)
